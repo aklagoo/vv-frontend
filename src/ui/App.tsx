@@ -1,37 +1,32 @@
-import { MutableRefObject, useRef, useState } from 'react'
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import AudioController from '../lib/AudioController.js';
+
 
 function App() {
+  const audioController: MutableRefObject<AudioController> = useRef(new AudioController());
   const [recPerm, setRecPerm] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const recorder: MutableRefObject<null | MediaRecorder> = useRef(null);
-  const chunks = useRef<Blob[]>([]);
   const clips = useRef<string[]>([]);
 
-  if(!recorder.current && navigator && navigator.mediaDevices) {
-    navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
-      recorder.current = new MediaRecorder(stream);
+  /** Add event handlers. */
+  audioController.current.addEventHandler("onInit", () => { setRecPerm(true); });
+  audioController.current.addEventHandler("onBeginRec", () => { setIsRecording(true); });
+  audioController.current.addEventHandler("onEndRec", (clipURL: string) => {
+    clips.current.push(clipURL);
+    setIsRecording(false);
+  });
 
-      // Add recorder event handlers.
-      recorder.current.ondataavailable = (e) => chunks.current.push(e.data)
-      recorder.current.onstop = () => {
-        const clip = new Blob(chunks.current, { type: "audio/ogg; codecs=opus" });
-        const clipURL = window.URL.createObjectURL(clip);
-        clips.current.push(clipURL);
-        setIsRecording(false);
-        chunks.current = [];
-      }
+  useEffect(() => {
+    /** Initialize the controller */
+    audioController.current.init();
+  }, []);
 
-      setRecPerm(true);
-    }).catch(() => setRecPerm(false))
+  const onClickRecording = () => {
+    if(isRecording)
+      audioController.current.endRec();
+    else
+      audioController.current.beginRec();
   }
-
-  const startRecording = () => {
-    recorder.current?.start();
-    setIsRecording(true);
-  };
-
-  const stopRecording = () => recorder.current?.stop();
-  const onClickRecording = () => { (!isRecording)? startRecording(): stopRecording(); }
 
   return (
     <div className='h-screen w-screen bg-zinc-800 flex flex-col text-zinc-300'>
