@@ -3,6 +3,7 @@ import AudioController from '../lib/AudioController.js';
 import { msToMss } from '../lib/utils.js';
 import ToneGenerator from './ToneGenerator.js';
 import NoteViewer from './NoteViewer.js';
+import Texts from './Texts.js';
 
 
 interface ClipDetails {
@@ -104,7 +105,7 @@ function App() {
           </div>
         </div>
       </nav>
-      <div className='flex-grow flex'>
+      <div className='flex-grow flex overflow-hidden'>
         <div className='w-80 border-r-2 border-zinc-950 overflow-y-auto'>
           {clips.current.map((clipDetails, index) => (
             <div key={index} className='flex flex-row justify-between px-8 py-4 border-b-2 border-[#181818]'>
@@ -123,9 +124,10 @@ function App() {
             <canvas ref={canvas} className='w-full h-full shadow-[0_0_8px_8px_rgba(0,0,0,0.50)_inset]'>
             </canvas>
           </article>
-          <div className='tools-sidebar w-80 flex flex-col'>
+          <div className='tools-sidebar w-80 flex flex-col overflow-y-scroll'>
             <ToneGenerator />
             <NoteViewer />
+            <Texts />
           </div>
         </div>
       </div>

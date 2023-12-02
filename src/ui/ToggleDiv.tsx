@@ -9,12 +9,12 @@ interface ToggleDivProps {
 
 
 export default function ToggleDiv(props: ToggleDivProps) {
-    const [hidden, setHidden] = useState(false);
+    const [hidden, setHidden] = useState(true);
 
     const padding = props.padding? props.padding: true;
 
     return (
-        <div className="overflow-hidden">
+        <div className="toggle-container">
             <div className='toggle-header flex flex-row h-8 px-4 gap-4 bg-[#181818] items-center' onClick={() => setHidden(!hidden)}>
               <button><img src='icons/dropdown.svg' className={"transition-transform " + (hidden? "-rotate-90": "")}></img></button>
               <p className='uppercase text-[0.675rem] font-medium tracking-[.25em]'>{props.title}</p>
