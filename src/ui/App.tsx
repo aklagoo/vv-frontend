@@ -1,7 +1,8 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import AudioController from '../lib/AudioController.js';
 import { msToMss } from '../lib/utils.js';
-import ToggleDiv from './ToggleDiv.js';
+import ToneGenerator from './ToneGenerator.js';
+import NoteViewer from './NoteViewer.js';
 
 
 interface ClipDetails {
@@ -65,34 +66,34 @@ function App() {
   return (
     <div className='h-screen w-screen bg-[#202020] flex flex-col text-zinc-300'>
       <nav className='w-full border-b-2 border-[#181818] h-16 flex flex-row'>
-        <div className='file-controls w-80 flex flex-row px-2 py-2 gap-4 border-r-2  border-[#181818]'>
-          <button className='text-sm text-center rounded-full w-full align-middle bg-gradient-to-b from-[#303030] to-[#282828]'>+ New recording</button>
-          <button className='rounded-full text-center flex justify-center items-center h-12 w-16 bg-gradient-to-b from-[#181818] to-[#101010]'>
-            <img className='h-6' src='icons/upload-navbar.svg'></img>
+        <div className='file-controls w-80 flex flex-row px-2 py-2 gap-4 border-r-2  border-[#181818] items-center'>
+          <button className='text-sm text-center h-9 rounded-full w-full align-middle bg-gradient-to-b from-[#303030] to-[#282828]'>+ New recording</button>
+          <button className='rounded-full text-center flex justify-center items-center h-9 w-12 bg-gradient-to-b from-[#181818] to-[#101010]'>
+            <img className='h-4' src='icons/upload-navbar.svg'></img>
           </button>
         </div>
         <div className='main-nav flex flex-row flex-grow justify-between px-2 py-2'>
-          <div className='playback-controls flex flex-row gap-4'>
+          <div className='playback-controls flex flex-row gap-4 items-center'>
             <button
-              className="disabled:from-[#282828] disabled:to-[#282828] disabled:cursor-no-drop transition rounded-full text-center flex justify-center items-center h-12 w-12 bg-gradient-to-b from-[#303030] to-[#282828]"
+              className="disabled:from-[#282828] disabled:to-[#282828] disabled:cursor-no-drop transition rounded-full text-center flex justify-center items-center h-9 w-9 bg-gradient-to-b from-[#303030] to-[#282828]"
               disabled={isRecording}
             >
               <img className='h-6' src='icons/play-sidebar.svg'></img>
             </button>
             <button
-              className="disabled:from-[#282828] disabled:to-[#282828] disabled:cursor-no-drop transition rounded-full text-center flex justify-center items-center h-12 w-12 bg-gradient-to-b from-[#303030] to-[#282828] disabled:bg-black"
+              className="disabled:from-[#282828] disabled:to-[#282828] disabled:cursor-no-drop transition rounded-full text-center flex justify-center items-center h-9 w-9 bg-gradient-to-b from-[#303030] to-[#282828] disabled:bg-black"
               disabled={isRecording}
             >
               <img className='h-6' src='icons/reset-navbar.svg'></img>
             </button>
             <button
               className={
-                `disabled:from-[#282828] disabled:to-[#282828] disabled:cursor-no-drop transition rounded-full text-center flex justify-center items-center h-12 w-12 bg-gradient-to-b from-[#303030] to-[#282828] ${isRecording? "shadow-[0px_0px_8px_2px_rgba(255,71,71,0.75)]": ""}`
+                `disabled:from-[#282828] disabled:to-[#282828] disabled:cursor-no-drop transition rounded-full text-center flex justify-center items-center h-9 w-9 bg-gradient-to-b from-[#303030] to-[#282828] ${isRecording? "shadow-[0px_0px_8px_2px_rgba(255,71,71,0.75)]": ""}`
               }
               disabled={!recPerm? true: false}
               onClick={onClickRecording}
             >
-              <img className='h-6' src='icons/record-navbar.svg'></img>
+              <img className='h-4' src='icons/record-navbar.svg'></img>
             </button>
             <div className='font-mono text-lg w-36 h-12 rounded-lg bg-[#101010] shadow-[0_0_4px_0_rgba(0,0,0,0.25)_inset] flex justify-center items-center'>
               <p ref={timerRef}>00:00.000</p>
@@ -123,32 +124,8 @@ function App() {
             </canvas>
           </article>
           <div className='tools-sidebar w-80 flex flex-col'>
-            <ToggleDiv title='Tone Generator'>
-              <div className='flex flex-col items-center gap-6'>
-                <input className='text-4xl bg-transparent text-center border-b-2 border-dashed outline-none pb-2 w-40' defaultValue={"152 Hz"}></input>
-                <div className='tone-gen-controls flex flex-row gap-0.5'>
-                    <button className="disabled:from-[#282828] disabled:to-[#282828] text-sm disabled:cursor-no-drop transition rounded-l-full text-center flex justify-center items-center h-12 w-[3.25rem] bg-gradient-to-b from-[#303030] to-[#282828]">-10</button>
-                    <button className="disabled:from-[#282828] disabled:to-[#282828] text-sm disabled:cursor-no-drop transition text-center flex justify-center items-center h-12 w-12 bg-gradient-to-b from-[#303030] to-[#282828]">-1</button>
-                    <button className="disabled:from-[#282828] disabled:to-[#282828] text-sm disabled:cursor-no-drop transition text-center flex justify-center items-center h-12 w-12 bg-gradient-to-b from-[#303030] to-[#282828]">
-                      <img className='h-6' src='icons/play-sidebar.svg'></img>
-                    </button>
-                    <button className="disabled:from-[#282828] disabled:to-[#282828] text-sm disabled:cursor-no-drop transition text-center flex justify-center items-center h-12 w-12 bg-gradient-to-b from-[#303030] to-[#282828]">+1</button>
-                    <button className="disabled:from-[#282828] disabled:to-[#282828] text-sm disabled:cursor-no-drop transition rounded-r-full text-center flex justify-center items-center h-12 w-[3.25rem] bg-gradient-to-b from-[#303030] to-[#282828]">+10</button>
-                </div>
-              </div>
-            </ToggleDiv>
-            <ToggleDiv title='Note'>
-              <div className='flex flex-col gap-6'>
-                <div className='subheading flex flex-row justify-between'>
-                  <p className='text-xs text-[#808080]'>The note associated with the current recording.</p>
-                  <button><img src='icons/edit.svg' className='w-4'></img></button>
-                </div>
-                <textarea
-                  className='bg-transparent focus-within:bg-[#181818] focus-within:text-[#808080] focus-within:italic rounded-lg p-2 h-48 overflow-y-auto text-sm outline-none resize-none'
-                  placeholder='Add your notes here...'
-                ></textarea>
-              </div>
-            </ToggleDiv>
+            <ToneGenerator />
+            <NoteViewer />
           </div>
         </div>
       </div>
